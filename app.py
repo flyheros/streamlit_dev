@@ -16,7 +16,7 @@ from langchain.document_loaders import UnstructuredPowerPointLoader
 # from langchain.vectorstores import FAISS
 
 # from langchain.callbacks import get_openai_callback
-# from langchain.memory import StreamlitChatMessageHistory
+from langchain.memory import StreamlitChatMessageHistory
 
 
 import pandas as pd
@@ -51,10 +51,11 @@ def main():
         st.session_state.conversation = get_conversation_chain(vectorestore, openai_api_key)
 
     if 'message' not in st.session_state:
+        print('초기화')
         st.session_state['message'] = [{'role':'assistant'
                                         , 'content':'안녕하세요!주어진 문서에 대해 궁금하신게 있나요?'}]
-
-    for message in st.session_state.messages:
+    
+    for message in st.session_state['message'] :
         with st.chat_message(message['role']):
             st.markdown(message['content'])
             
@@ -63,7 +64,7 @@ def main():
     history = StreamlitChatMessageHistory(key='chat_message')
     
     if query := st.chat_input("질문을 입력해"):
-        st.session_state.messages.append({"role":"user", "content":query})
+        st.session_state['message'].append({"role":"user", "content":query})
     
         with st.chat_message("user"):
             st.markdown(query)
